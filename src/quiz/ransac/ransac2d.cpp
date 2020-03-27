@@ -67,16 +67,25 @@ std::unordered_set<int> Ransac(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
     for (auto iter = 0; iter < maxIterations; ++iter) {
         auto num1 = cloud->points[rand() % cloud_size];
         auto num2 = cloud->points[rand() % cloud_size];
+        auto num3 = cloud->points[rand() % cloud_size];
         // Randomly sample subset and fit line
-        auto A = num1.y - num2.y;                    // y1 - y2
-        auto B = num2.x - num1.x;                    // x2 - x1
-        auto C = num1.x * num2.y - num2.x * num1.y;  // x1y2 - x2y1
+        auto A = ((num2.y - num1.y) * (num3.z - num1.z) -
+                  (num2.z - num1.z) *
+                      (num3.y - num1.y));  //(y2-y1)(z3-z1) - (z2-z1)(y3-y1)
+
+        auto B = (num2.z - num1.z) * (num3.x - num1.x) -
+                 (num2.x - num1.x) * (num3.z - num1.z);  // x2 - x1
+        auto C = (num2.x * num1.x) * (num3.y - num1.y) -
+                 (num2.y - num1.y) * (num3.x - num1.x);  // x1y2 - x2y1
+
+        auto D = -(A * num1.x + B * num1.y + C * num1.z);
         // Measure distance between every point and fitted line
         std::unordered_set<int> inliers;
         for (int index = 0; index < cloud->points.size(); ++index) {
             auto point = cloud->points[index];
-            auto distance = std::abs(A * point.x + B * point.y + C) /
-                            std::sqrt(A * A + B * B);
+            auto distance =
+                std::abs(A * point.x + B * point.y + C * point.z + D) /
+                std::sqrt(A * A + B * B + C * C);
             // If distance is smaller than threshold count it as inlier
             if (distance < distanceTol) {
                 inliers.insert(index);
@@ -95,7 +104,7 @@ int main() {
     pcl::visualization::PCLVisualizer::Ptr viewer = initScene();
 
     // Create data
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData();
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData3D();
 
     // TODO: Change the max iteration and distance tolerance arguments for
     // Ransac function
