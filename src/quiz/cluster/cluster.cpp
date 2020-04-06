@@ -132,7 +132,7 @@ int main() {
     render2DTree(tree->root, viewer, window, it);
 
     std::cout << "Test Search" << std::endl;
-    std::vector<int> nearby = tree->search({-6, 7}, 3.0);
+    std::vector<int> nearby = tree->search({-6, 7}, 1.0);
     for (int index : nearby) std::cout << index << ",";
     std::cout << std::endl;
 
@@ -140,7 +140,7 @@ int main() {
     auto startTime = std::chrono::steady_clock::now();
     //
     std::vector<std::vector<int>> clusters =
-        euclideanCluster(points, tree, 5.0);
+        euclideanCluster(points, tree, 3.0);
     //
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(

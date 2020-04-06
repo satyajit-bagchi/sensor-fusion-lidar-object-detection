@@ -72,7 +72,54 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer) {
         ++clusterId;
     }
 }
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer) {
+    // ----------------------------------------------------
+    // -----Open 3D viewer and display City Block     -----
+    // ----------------------------------------------------
 
+    ProcessPointClouds<pcl::PointXYZI>* pointProcessorI =
+        new ProcessPointClouds<pcl::PointXYZI>();
+    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = pointProcessorI->loadPcd(
+        "../src/sensors/data/pcd/data_1/0000000000.pcd");
+    auto xrange = 20.0;
+    auto yrange = 5.0;
+    auto zrange = 2.0;
+    auto filteredCloud = pointProcessorI->FilterCloud(
+        inputCloud, 0.3, Eigen::Vector4f(-xrange, -yrange, -zrange, 1),
+        Eigen::Vector4f(xrange, yrange, zrange, 1));
+
+    // Segment point cloud
+    auto maxIter = 20;
+    auto distanceThreshold = 3.0;
+    auto objects_and_road = pointProcessorI->SegmentPlane(
+        filteredCloud, maxIter, distanceThreshold);
+
+    // Cluster
+    auto clusterTolerance = 0.5;
+    auto minSize = 10;
+    auto maxSize = 400;
+    auto clusters = pointProcessorI->Clustering(
+        objects_and_road.first, clusterTolerance, minSize, maxSize);
+
+    std::vector<Color> colors = {Color(1, 0, 0), Color(1, 1, 0),
+                                 Color(0, 0, 1)};
+    auto clusterId = 0;
+    for (auto cluster : clusters) {
+        std::cout << "Cluster size: ";
+        pointProcessorI->numPoints(cluster);
+        renderPointCloud(viewer, cluster,
+                         "obstCloud" + std::to_string(clusterId),
+                         colors[clusterId]);
+        Box box = pointProcessorI->BoundingBox(cluster);
+        renderBox(viewer, box, clusterId, Color(0, 1, 0));
+        ++clusterId;
+    }
+    // renderPointCloud(viewer, filteredCloud, "inputCloud");
+    // renderPointCloud(viewer, objects_and_road.first, "Objects", Color(1, 0,
+    // 0));
+    renderPointCloud(viewer, objects_and_road.second, "Road",
+                     Color(165, 42, 42));
+}
 // setAngle: SWITCH CAMERA ANGLE {XY, TopDown, Side, FPS}
 void initCamera(CameraAngle setAngle,
                 pcl::visualization::PCLVisualizer::Ptr& viewer) {
@@ -107,7 +154,8 @@ int main(int argc, char** argv) {
         new pcl::visualization::PCLVisualizer("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
-    simpleHighway(viewer);
+    // simpleHighway(viewer);
+    cityBlock(viewer);
 
     while (!viewer->wasStopped()) {
         viewer->spinOnce();
