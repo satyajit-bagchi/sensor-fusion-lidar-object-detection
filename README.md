@@ -13,8 +13,11 @@
 #### Lidar data
 <img src="media/lidar-data.png" width="700" height="400" />
 
+#### RANSAC Ground plane segmentation
+<img src="media/ground-plane-segmentation.png" width="700" height="400" />
+
 #### RANSAC Ground plane segmentation and clustering
-<img src="media/ground_plane_segmentation.png" width="700" height="400" />
+<img src="media/ground_plane_segmentation_clustering.png" width="700" height="400" />
 
 #### Voxel grid filtering
 <img src="media/Voxel-grid.png" width="700" height="400" />
