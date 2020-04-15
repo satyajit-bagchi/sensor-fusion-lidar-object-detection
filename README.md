@@ -7,7 +7,7 @@
 
 ### Results
 
-#### Clustering and bounding box prediciton on streamed point cloud data
+#### Clustering and bounding box prediction on streamed point cloud data
 <img src="media/lidar.gif" width="700" height="400" />
 
 #### Lidar data
