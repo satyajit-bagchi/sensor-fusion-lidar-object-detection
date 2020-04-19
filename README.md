@@ -5,6 +5,17 @@
 
 ## Repo for the Lidar object detection project from the Sensor Fusion course for self-driving cars.
 
+### Instructions for running
+
+The main program can be built and run by doing the following from the project top directory.
+
+1. mkdir build
+2. cd build
+3. cmake ..
+4. make
+5. ./environment
+
+
 ### Results
 
 #### Clustering and bounding box prediction on streamed point cloud data
@@ -24,3 +35,4 @@
 
 #### Euclidian Clustering and bounding box prediction
 <img src="media/bb-prediction.png" width="700" height="400" />
+
